@@ -1,0 +1,28 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        html.destination = file('build/reports/jacoco/html')
+
+        xml.required = true
+        xml.destination = file('build/reports/jacoco/html/report.xml')
+        csv.required = false
+    }
+    afterEvaluate {
+        getClassDirectories().setFrom(
+            files(
+                classDirectories.files.collect {
+                    fileTree(
+                        dir: it,
+                        excludes: []
+                    )
+                })
+        )
+    }
+}

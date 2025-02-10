@@ -1,0 +1,45 @@
+
+apply plugin: 'com.adarshr.test-logger'
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat = 'full'
+    }
+}
+
+testlogger {
+    showSimpleNames true
+}
+
+ext.generatedResources = "$buildDir/generated/resources"
+
+sourceSets {
+    test.resources.srcDirs += generatedResources
+}
+
+tasks.register('generateSdkResource') {
+    inputs.property("compileSdkVersion", 33)
+    // No need to set this anymore, AGP had a default value for this
+    // inputs.property("buildToolsVersion", "33.0.1")
+    inputs.property("minSdkVersion", 19)
+    inputs.property("advancedBuildPluginVersion", project.version)
+    inputs.property("advancedBuildPluginId", project.pluginId)
+    outputs.dir(generatedResources)
+    doLast {
+        // Properties.write will have a timestamp, that invalidates the task,
+        // so we don't use it and write a file manually
+        new File("$generatedResources", "sdk.prop").withWriter('UTF-8') { writer ->
+            writer.write("compileSdkVersion=33\n")
+            // No need to set this anymore, AGP had a default value for this
+            //writer.write("buildToolsVersion=33.0.1\n")
+            writer.write("minSdkVersion=19\n")
+            writer.write("advancedBuildPluginVersion=${project.version}\n")
+            writer.write("advancedBuildPluginId=${project.pluginId}\n")
+        }
+    }
+}
+
+tasks.named("processTestResources").configure {
+    dependsOn(tasks.named("generateSdkResource"))
+}

@@ -1,0 +1,29 @@
+
+project.description = "Generate Android version code and version name automatically from git tags, date,... ."
+project.group = "me.moallemi.gradle"
+project.version = "3.0.0"
+
+project.ext {
+    pluginId = 'me.moallemi.advanced-build-version'
+    //pluginId = 'me.moallemi.gradle.advanced-build-version' local Android project test
+    artifactId = 'advanced-build-version'
+    name = 'Gradle Advanced Build Version Plugin'
+    url = "https://github.com/moallemi/gradle-advanced-build-version"
+    scm = [
+        connectionUrl         : "scm:git@github.com:moallemi/gradle-advanced-build-version.git",
+        developerConnectionUrl: "scm:git@github.com:moallemi/gradle-advanced-build-version.git"
+    ]
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set("sources")
+}
+
+tasks.register('javadocJar', Jar) {
+    from tasks.javadoc
+    archiveClassifier.set("javadoc")
+}
+
+apply from: 'gradle/maven-publish.gradle'
+apply from: 'gradle/gradle-publish.gradle'
